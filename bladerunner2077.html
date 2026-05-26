@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>BLADERUNNER 2077 — STUDIOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+  :root {
+    --cyan: #00f5ff;
+    --magenta: #ff006e;
+    --purple: #9000ff;
+    --gold: #ffd700;
+    --bg: #020408;
+    --bg2: #060c14;
+    --text: #e8f4ff;
+    --muted: rgba(232,244,255,0.45);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+    overscroll-behavior-y: none;
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width:3px; }
+  ::-webkit-scrollbar-track { background: #000; }
+  ::-webkit-scrollbar-thumb { background: var(--cyan); border-radius:2px; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top:0; left:0; right:0; z-index:1000;
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 18px 48px;
+    transition: background 0.4s, backdrop-filter 0.4s;
+  }
+  nav.scrolled {
+    background: rgba(2,4,8,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(0,245,255,0.1);
+  }
+  .nav-logo {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: 1.1rem;
+    letter-spacing: 0.25em;
+    color: var(--cyan);
+    text-shadow: 0 0 20px var(--cyan);
+    text-decoration: none;
+  }
+  .nav-links { display:flex; gap:36px; list-style:none; }
+  .nav-links a {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--cyan); }
+  .nav-cta {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: var(--bg);
+    background: var(--cyan);
+    border: none; cursor:pointer;
+    padding: 10px 22px;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    transition: box-shadow 0.3s;
+  }
+  .nav-cta:hover { box-shadow: 0 0 30px var(--cyan); }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    height: 100dvh;
+    overflow: hidden;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .hero-video {
+    position:absolute; inset:0; width:100%; height:100%;
+    object-fit:cover;
+    filter: brightness(0.6) contrast(1.1) saturate(1.3);
+  }
+  .hero-overlay {
+    position:absolute; inset:0;
+    background: linear-gradient(
+      to bottom,
+      rgba(2,4,8,0.15) 0%,
+      rgba(2,4,8,0) 30%,
+      rgba(2,4,8,0) 60%,
+      rgba(2,4,8,0.9) 90%,
+      rgba(2,4,8,1) 100%
+    );
+  }
+  /* Scanline effect */
+  .hero-overlay::after {
+    content:'';
+    position:absolute; inset:0;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0,0,0,0) 0px,
+      rgba(0,0,0,0) 2px,
+      rgba(0,0,0,0.04) 2px,
+      rgba(0,0,0,0.04) 4px
+    );
+    pointer-events:none;
+  }
+  .hero-content {
+    position:relative; z-index:10;
+    text-align:center;
+    padding: 0 24px;
+  }
+  .hero-eyebrow {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(0.6rem, 1.2vw, 0.85rem);
+    letter-spacing: 0.4em;
+    color: var(--cyan);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    opacity:0; animation: fadeUp 1s 0.5s forwards;
+  }
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(72px, 14vw, 200px);
+    line-height: 0.9;
+    letter-spacing: 0.03em;
+    color: #fff;
+    text-shadow:
+      0 0 60px rgba(0,245,255,0.3),
+      0 0 120px rgba(0,245,255,0.15);
+    opacity:0; animation: fadeUp 1s 0.8s forwards;
+  }
+  .hero-title span { color: var(--cyan); }
+  .hero-sub {
+    font-size: clamp(0.85rem, 1.5vw, 1.1rem);
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    margin-top: 24px;
+    font-weight: 300;
+    opacity:0; animation: fadeUp 1s 1.1s forwards;
+  }
+  .hero-scroll-hint {
+    position:absolute; bottom:40px; left:50%; transform:translateX(-50%);
+    display:flex; flex-direction:column; align-items:center; gap:8px;
+    opacity:0; animation: fadeUp 1s 1.5s forwards;
+  }
+  .hero-scroll-hint span {
+    font-family: 'Orbitron', sans-serif;
+    font-size:0.55rem; letter-spacing:0.3em; color: var(--muted);
+  }
+  .scroll-line {
+    width:1px; height:50px;
+    background: linear-gradient(to bottom, var(--cyan), transparent);
+    animation: scrollLine 2s infinite;
+  }
+  @keyframes scrollLine {
+    0%   { transform:scaleY(0) translateY(0); transform-origin:top; }
+    50%  { transform:scaleY(1) translateY(0); transform-origin:top; }
+    100% { transform:scaleY(1) translateY(10px); opacity:0; }
+  }
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(30px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  /* ── CANVAS SCROLL SECTION ── */
+  #scroll-section {
+    position: relative;
+    height: 650vh;
+  }
+  #sticky-wrap {
+    position: sticky;
+    top: 0;
+    height: 100dvh;
+    width: 100%;
+    overflow: hidden;
+  }
+  #cyber-canvas {
+    position:absolute; top:0; left:0;
+    display:block;
+  }
+  /* Dark vignette over canvas */
+  .canvas-vignette {
+    position:absolute; inset:0; pointer-events:none; z-index:2;
+    background: radial-gradient(ellipse at center,
+      transparent 40%,
+      rgba(2,4,8,0.6) 100%
+    );
+  }
+  /* Neon corner accents */
+  .corner-tl, .corner-br {
+    position:absolute; z-index:3; pointer-events:none;
+    width:80px; height:80px;
+  }
+  .corner-tl {
+    top:40px; left:40px;
+    border-top: 1px solid var(--cyan);
+    border-left: 1px solid var(--cyan);
+    box-shadow: -3px -3px 20px rgba(0,245,255,0.3);
+  }
+  .corner-br {
+    bottom:40px; right:40px;
+    border-bottom: 1px solid var(--cyan);
+    border-right: 1px solid var(--cyan);
+    box-shadow: 3px 3px 20px rgba(0,245,255,0.3);
+  }
+  /* Scanline overlay */
+  .scanlines {
+    position:absolute; inset:0; z-index:4; pointer-events:none;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0,0,0,0) 0px,
+      rgba(0,0,0,0) 3px,
+      rgba(0,0,0,0.05) 3px,
+      rgba(0,0,0,0.05) 4px
+    );
+  }
+
+  /* ── TEXT PANELS (inside sticky wrap) ── */
+  .text-panel {
+    position:absolute; z-index:10;
+    opacity:0;
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .text-panel.visible { opacity:1; transform:translateY(0) !important; }
+
+  /* Panel 1 — bottom left */
+  .panel-1 {
+    bottom: 12vh; left: 6vw;
+    max-width: min(480px, 45vw);
+    transform: translateY(30px);
+  }
+  /* Panel 2 — top right */
+  .panel-2 {
+    top: 18vh; right: 6vw;
+    max-width: min(420px, 40vw);
+    text-align: right;
+    transform: translateY(-30px);
+  }
+  /* Panel 3 — center */
+  .panel-3 {
+    top: 50%; left: 50%;
+    transform: translate(-50%, calc(-50% + 40px));
+    text-align: center;
+    width: min(600px, 80vw);
+  }
+  .panel-3.visible { transform: translate(-50%, -50%) !important; }
+  /* Panel 4 — bottom right */
+  .panel-4 {
+    bottom:12vh; right:6vw;
+    max-width:min(460px,44vw);
+    text-align:right;
+    transform:translateY(30px);
+  }
+  /* Panel 5 — top left */
+  .panel-5 {
+    top:18vh; left:6vw;
+    max-width:min(440px,42vw);
+    transform:translateY(-30px);
+  }
+
+  .panel-label {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(0.5rem, 0.9vw, 0.7rem);
+    letter-spacing: 0.4em;
+    color: var(--cyan);
+    margin-bottom: 12px;
+    text-shadow: 0 0 12px var(--cyan);
+  }
+  .panel-heading {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(36px, 6vw, 90px);
+    line-height: 0.95;
+    letter-spacing: 0.02em;
+    color: #fff;
+    text-shadow: 0 0 40px rgba(0,245,255,0.2);
+    margin-bottom: 16px;
+  }
+  .panel-heading .accent { color: var(--cyan); }
+  .panel-heading .accent-m { color: var(--magenta); }
+  .panel-text {
+    font-size: clamp(0.8rem, 1.2vw, 0.95rem);
+    color: var(--muted);
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  /* Progress bar */
+  .scroll-progress {
+    position:absolute; bottom:0; left:0; z-index:20;
+    height:2px;
+    background: linear-gradient(to right, var(--cyan), var(--magenta));
+    width:0%;
+    transition: width 0.1s linear;
+    box-shadow: 0 0 10px var(--cyan);
+  }
+
+  /* ── STATS STRIP ── */
+  .stats {
+    background: var(--bg2);
+    border-top: 1px solid rgba(0,245,255,0.12);
+    border-bottom: 1px solid rgba(0,245,255,0.12);
+    padding: 60px 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    text-align: center;
+  }
+  .stat-item { padding: 20px; border-right: 1px solid rgba(255,255,255,0.06); }
+  .stat-item:last-child { border-right:none; }
+  .stat-num {
+    font-family:'Bebas Neue', sans-serif;
+    font-size: clamp(48px, 6vw, 80px);
+    color: var(--cyan);
+    text-shadow: 0 0 30px rgba(0,245,255,0.5);
+    line-height:1;
+  }
+  .stat-label {
+    font-family:'Orbitron', sans-serif;
+    font-size:0.6rem; letter-spacing:0.25em;
+    color: var(--muted); margin-top:8px;
+  }
+
+  /* ── MARQUEE ── */
+  .marquee-wrap {
+    overflow:hidden;
+    padding: 28px 0;
+    background: linear-gradient(135deg, rgba(0,245,255,0.06) 0%, rgba(144,0,255,0.06) 100%);
+    border-top:1px solid rgba(0,245,255,0.08);
+    border-bottom:1px solid rgba(0,245,255,0.08);
+  }
+  .marquee-track {
+    display:flex; gap:0;
+    width: max-content;
+    animation: marquee 25s linear infinite;
+  }
+  .marquee-track span {
+    font-family:'Bebas Neue', sans-serif;
+    font-size: clamp(18px, 2.5vw, 28px);
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    padding: 0 32px;
+  }
+  .marquee-track span.dot {
+    color: var(--cyan);
+    padding: 0 8px;
+    font-size:0.8em;
+  }
+  @keyframes marquee {
+    from { transform:translateX(0); }
+    to   { transform:translateX(-50%); }
+  }
+
+  /* ── GAMES GRID ── */
+  .games-section {
+    padding: 120px 6vw;
+    background: var(--bg);
+  }
+  .section-header {
+    margin-bottom: 64px;
+  }
+  .section-eyebrow {
+    font-family:'Orbitron', sans-serif;
+    font-size:0.7rem; letter-spacing:0.4em;
+    color: var(--cyan); margin-bottom:16px;
+    display:block;
+  }
+  .section-title {
+    font-family:'Bebas Neue', sans-serif;
+    font-size: clamp(48px, 7vw, 100px);
+    line-height:0.9; letter-spacing:0.02em;
+    color: #fff;
+  }
+  .section-title .dim { color: rgba(255,255,255,0.2); }
+  .games-grid {
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+  .game-card {
+    position:relative; overflow:hidden;
+    aspect-ratio:9/14;
+    cursor:pointer;
+    background: var(--bg2);
+  }
+  .game-card::before {
+    content:'';
+    position:absolute; inset:0;
+    background: linear-gradient(
+      to bottom,
+      transparent 40%,
+      rgba(2,4,8,0.98) 100%
+    );
+    z-index:1;
+  }
+  .game-card-bg {
+    width:100%; height:100%;
+    transition: transform 0.6s ease;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .game-card:hover .game-card-bg { transform:scale(1.08); }
+  .game-card-inner {
+    position:absolute; bottom:0; left:0; right:0; z-index:2;
+    padding: 24px;
+  }
+  .game-tag {
+    font-family:'Orbitron', sans-serif;
+    font-size:0.55rem; letter-spacing:0.3em;
+    padding:4px 10px; border:1px solid currentColor;
+    display:inline-block; margin-bottom:12px;
+  }
+  .game-title {
+    font-family:'Bebas Neue', sans-serif;
+    font-size: clamp(22px, 2.5vw, 36px);
+    letter-spacing:0.04em; color:#fff;
+    margin-bottom:6px;
+  }
+  .game-desc {
+    font-size:0.75rem; color:var(--muted);
+    line-height:1.5; font-weight:300;
+  }
+
+  /* Game 1 — Neon Abyss */
+  .game-card:nth-child(1) .game-card-bg {
+    background: radial-gradient(ellipse at 40% 30%, #0d2a4a 0%, #020a14 50%, #000 100%);
+  }
+  .game-card:nth-child(1) .game-tag { color: #00aaff; border-color: rgba(0,170,255,0.4); }
+  .game-card:nth-child(1) .glyph { font-size:80px; color:rgba(0,170,255,0.12); font-family:'Orbitron',sans-serif; font-weight:900; }
+
+  /* Game 2 — Null City */
+  .game-card:nth-child(2) .game-card-bg {
+    background: radial-gradient(ellipse at 60% 30%, #2a0a2a 0%, #0e0020 50%, #000 100%);
+  }
+  .game-card:nth-child(2) .game-tag { color: var(--magenta); border-color: rgba(255,0,110,0.4); }
+  .game-card:nth-child(2) .glyph { font-size:80px; color:rgba(255,0,110,0.1); font-family:'Orbitron',sans-serif; font-weight:900; }
+
+  /* Game 3 — Chrome Protocol */
+  .game-card:nth-child(3) .game-card-bg {
+    background: radial-gradient(ellipse at 50% 20%, #0d2a1a 0%, #041008 50%, #000 100%);
+  }
+  .game-card:nth-child(3) .game-tag { color: #00ff88; border-color: rgba(0,255,136,0.4); }
+  .game-card:nth-child(3) .glyph { font-size:80px; color:rgba(0,255,136,0.08); font-family:'Orbitron',sans-serif; font-weight:900; }
+
+  /* ── CTA ── */
+  .cta-section {
+    padding: 160px 6vw;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-section::before {
+    content:'';
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    width:600px; height:600px;
+    background: radial-gradient(circle, rgba(0,245,255,0.06) 0%, transparent 70%);
+    pointer-events:none;
+  }
+  .cta-title {
+    font-family:'Bebas Neue', sans-serif;
+    font-size: clamp(56px, 10vw, 140px);
+    line-height:0.9; letter-spacing:0.02em;
+    color:#fff; margin-bottom:32px;
+  }
+  .cta-title .line2 { color: var(--cyan); text-shadow: 0 0 40px rgba(0,245,255,0.4); }
+  .cta-sub {
+    font-size:1rem; color:var(--muted);
+    max-width:500px; margin: 0 auto 48px; line-height:1.7;
+  }
+  .cta-buttons { display:flex; gap:16px; justify-content:center; flex-wrap:wrap; }
+  .btn-primary {
+    font-family:'Orbitron', sans-serif;
+    font-size:0.7rem; letter-spacing:0.2em;
+    color: var(--bg); background: var(--cyan);
+    border:none; cursor:pointer; padding:16px 40px;
+    clip-path:polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%);
+    transition: box-shadow 0.3s, transform 0.2s;
+    text-transform:uppercase;
+    text-decoration:none; display:inline-block;
+  }
+  .btn-primary:hover { box-shadow:0 0 40px rgba(0,245,255,0.5); transform:translateY(-2px); }
+  .btn-ghost {
+    font-family:'Orbitron', sans-serif;
+    font-size:0.7rem; letter-spacing:0.2em;
+    color: var(--cyan); background:transparent;
+    border:1px solid rgba(0,245,255,0.4);
+    cursor:pointer; padding:16px 40px;
+    clip-path:polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%);
+    transition: border-color 0.3s, box-shadow 0.3s;
+    text-transform:uppercase;
+    text-decoration:none; display:inline-block;
+  }
+  .btn-ghost:hover { border-color:var(--cyan); box-shadow:0 0 30px rgba(0,245,255,0.2); }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--bg2);
+    border-top:1px solid rgba(0,245,255,0.1);
+    padding: 60px 6vw;
+    display:grid; grid-template-columns:1fr auto; gap:40px; align-items:center;
+  }
+  .footer-logo {
+    font-family:'Orbitron', sans-serif;
+    font-weight:900; font-size:1.2rem;
+    letter-spacing:0.25em; color:var(--cyan);
+    text-shadow:0 0 20px var(--cyan);
+    margin-bottom:12px;
+  }
+  .footer-copy {
+    font-size:0.75rem; color:var(--muted); letter-spacing:0.08em;
+  }
+  .footer-links { display:flex; gap:28px; }
+  .footer-links a {
+    font-family:'Orbitron', sans-serif;
+    font-size:0.6rem; letter-spacing:0.2em;
+    color:var(--muted); text-decoration:none;
+    transition:color 0.2s;
+  }
+  .footer-links a:hover { color:var(--cyan); }
+
+  /* ── LOADING SCREEN ── */
+  #loader {
+    position:fixed; inset:0; z-index:9999;
+    background: #000;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:24px;
+    transition: opacity 0.8s ease;
+  }
+  #loader.hidden { opacity:0; pointer-events:none; }
+  .loader-logo {
+    font-family:'Orbitron', sans-serif;
+    font-size:1rem; letter-spacing:0.4em;
+    color: var(--cyan);
+    text-shadow:0 0 20px var(--cyan);
+  }
+  .loader-bar-wrap {
+    width:200px; height:1px;
+    background:rgba(0,245,255,0.15);
+  }
+  .loader-bar {
+    height:1px; width:0%;
+    background:var(--cyan);
+    box-shadow:0 0 10px var(--cyan);
+    transition:width 0.1s linear;
+  }
+  .loader-pct {
+    font-family:'Orbitron', sans-serif;
+    font-size:0.65rem; letter-spacing:0.3em;
+    color:var(--muted);
+  }
+
+  /* ── GLITCH TEXT EFFECT ── */
+  .glitch {
+    position:relative;
+    display:inline-block;
+  }
+  .glitch::before, .glitch::after {
+    content: attr(data-text);
+    position:absolute; top:0; left:0;
+    width:100%; height:100%;
+    font-family:inherit; font-size:inherit;
+    line-height:inherit; letter-spacing:inherit;
+  }
+  .glitch::before {
+    color: var(--cyan);
+    clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
+    animation: glitch-top 3s infinite;
+    animation-delay:1s;
+  }
+  .glitch::after {
+    color: var(--magenta);
+    clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
+    animation: glitch-bot 3s infinite;
+    animation-delay:1s;
+  }
+  @keyframes glitch-top {
+    0%,95%  { transform:translate(0,0); opacity:0; }
+    96%     { transform:translate(-3px,0); opacity:0.8; }
+    97%     { transform:translate(3px,0);  opacity:0.8; }
+    98%,100%{ transform:translate(0,0); opacity:0; }
+  }
+  @keyframes glitch-bot {
+    0%,95%  { transform:translate(0,0); opacity:0; }
+    96%     { transform:translate(3px,0); opacity:0.8; }
+    97%     { transform:translate(-3px,0); opacity:0.8; }
+    98%,100%{ transform:translate(0,0); opacity:0; }
+  }
+
+  /* Noise texture overlay */
+  .noise {
+    position:fixed; inset:0; z-index:9998; pointer-events:none;
+    opacity:0.025;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-size:200px 200px;
+  }
+
+  @media (max-width:768px) {
+    nav { padding:16px 24px; }
+    .nav-links { display:none; }
+    .stats { grid-template-columns:repeat(2, 1fr); }
+    .games-grid { grid-template-columns:1fr; gap:2px; }
+    .game-card { aspect-ratio:16/9; }
+    footer { grid-template-columns:1fr; }
+    .footer-links { display:none; }
+    .panel-1, .panel-2, .panel-3, .panel-4, .panel-5 {
+      max-width:85vw !important; left:50% !important; right:auto !important;
+      transform:translateX(-50%) translateY(30px) !important;
+      text-align:center !important;
+    }
+    .panel-2 { top:auto !important; bottom:14vh; }
+    .panel-5 { top:auto !important; bottom:14vh; }
+    .panel-3.visible { transform:translateX(-50%) translateY(-50%) !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Noise overlay -->
+<div class="noise"></div>
+
+<!-- Loading screen -->
+<div id="loader">
+  <div class="loader-logo">BLADERUNNER 2077</div>
+  <div class="loader-bar-wrap"><div class="loader-bar" id="loader-bar"></div></div>
+  <div class="loader-pct" id="loader-pct">0%</div>
+</div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo">BR2077</a>
+  <ul class="nav-links">
+    <li><a href="#games">GAMES</a></li>
+    <li><a href="#studio">STUDIO</a></li>
+    <li><a href="#careers">CAREERS</a></li>
+  </ul>
+  <button class="nav-cta">WISHLIST NOW</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <video class="hero-video" autoplay muted loop playsinline webkit-playsinline>
+    <source src="cyberpunk.mp4" type="video/mp4">
+  </video>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">BLADERUNNER STUDIOS PRESENTS</p>
+    <h1 class="hero-title glitch" data-text="BLADE&#10;RUNNER">BLADE<br><span>RUNNER</span></h1>
+    <p class="hero-sub">WHERE NEON DREAMS BECOME DIGITAL NIGHTMARES</p>
+  </div>
+  <div class="hero-scroll-hint">
+    <span>SCROLL</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- SCROLL CANVAS SECTION -->
+<section id="scroll-section">
+  <div id="sticky-wrap">
+    <canvas id="cyber-canvas"></canvas>
+    <div class="canvas-vignette"></div>
+    <div class="corner-tl"></div>
+    <div class="corner-br"></div>
+    <div class="scanlines"></div>
+
+    <!-- Panel 1: The World -->
+    <div class="text-panel panel-1" id="panel-1">
+      <p class="panel-label">// 01 — THE WORLD</p>
+      <h2 class="panel-heading">A CITY<br>OF <span class="accent">NEON</span><br>LIES</h2>
+      <p class="panel-text">Night City, 2077. Corporations own everything. The streets belong to the desperate. We built a world where every alley tells a story and every choice has a price.</p>
+    </div>
+
+    <!-- Panel 2: The Vision -->
+    <div class="text-panel panel-2" id="panel-2">
+      <p class="panel-label">02 — THE VISION //</p>
+      <h2 class="panel-heading"><span class="accent-m">DARK</span><br>MATTER<br>GAMES</h2>
+      <p class="panel-text">Founded in 2019 by ex-AAA veterans, Bladerunner Studios pushes the boundaries of what open-world narrative games can be. Emotion. Consequence. Atmosphere.</p>
+    </div>
+
+    <!-- Panel 3: The Title -->
+    <div class="text-panel panel-3" id="panel-3">
+      <p class="panel-label">// 03 — THE GAME</p>
+      <h2 class="panel-heading" style="font-size:clamp(56px,9vw,130px);">CHROME<br><span class="accent">PROTOCOL</span></h2>
+      <p class="panel-text">An open-world action RPG set in a dystopian megacity. You are a ghost — a memory-erased operative who must unravel the conspiracy that killed them. Coming 2025.</p>
+    </div>
+
+    <!-- Panel 4: The Tech -->
+    <div class="text-panel panel-4" id="panel-4">
+      <p class="panel-label">04 — THE ENGINE //</p>
+      <h2 class="panel-heading">BUILT ON<br><span class="accent">VOID</span><br>ENGINE 4</h2>
+      <p class="panel-text">Proprietary rendering tech. Real-time global illumination. Crowd simulation with 100,000 unique NPCs. Every rain drop. Every reflection. Rendered live.</p>
+    </div>
+
+    <!-- Panel 5: The Call -->
+    <div class="text-panel panel-5" id="panel-5">
+      <p class="panel-label">// 05 — THE FUTURE</p>
+      <h2 class="panel-heading">JOIN<br>THE<br><span class="accent">GRID</span></h2>
+      <p class="panel-text">Be the first to enter the simulation. Wishlist Chrome Protocol on Steam, sign up for beta access, and follow our development dispatches from the neon underground.</p>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="scroll-progress" id="scroll-progress"></div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat-item">
+    <div class="stat-num">147</div>
+    <div class="stat-label">TEAM MEMBERS</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">6</div>
+    <div class="stat-label">YEARS ACTIVE</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">3</div>
+    <div class="stat-label">SHIPPED TITLES</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">2.4M</div>
+    <div class="stat-label">WISHLISTS</div>
+  </div>
+</div>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track" id="marquee-track"></div>
+</div>
+
+<!-- GAMES GRID -->
+<section class="games-section" id="games">
+  <div class="section-header">
+    <span class="section-eyebrow">// OUR TITLES</span>
+    <h2 class="section-title">THE<br><span class="dim">ARCHIVE</span></h2>
+  </div>
+  <div class="games-grid">
+    <!-- Game 1 -->
+    <div class="game-card">
+      <div class="game-card-bg">
+        <div class="glyph">∞</div>
+      </div>
+      <div class="game-card-inner">
+        <span class="game-tag" style="color:#00aaff;">RELEASED 2021</span>
+        <h3 class="game-title">NEON ABYSS II</h3>
+        <p class="game-desc">A rogue-lite descent into the neon underworld. 2M copies sold. GOTY nominee at The Game Awards.</p>
+      </div>
+    </div>
+    <!-- Game 2 -->
+    <div class="game-card">
+      <div class="game-card-bg">
+        <div class="glyph">Ø</div>
+      </div>
+      <div class="game-card-inner">
+        <span class="game-tag">RELEASED 2023</span>
+        <h3 class="game-title">NULL CITY</h3>
+        <p class="game-desc">Narrative mystery set in an abandoned smart city. 94 on Metacritic. IGN Editor's Choice Award.</p>
+      </div>
+    </div>
+    <!-- Game 3 -->
+    <div class="game-card">
+      <div class="game-card-bg">
+        <div class="glyph">⊕</div>
+      </div>
+      <div class="game-card-inner">
+        <span class="game-tag" style="color:#00ff88;">COMING 2025</span>
+        <h3 class="game-title">CHROME PROTOCOL</h3>
+        <p class="game-desc">Open-world action RPG. Memory-erased operative. Megacity conspiracy. Our most ambitious project yet.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="careers">
+  <h2 class="cta-title">ENTER<br><span class="line2">THE GRID</span></h2>
+  <p class="cta-sub">Chrome Protocol beta access opens Q1 2025. Limited slots available for Night City's first operatives.</p>
+  <div class="cta-buttons">
+    <a href="#" class="btn-primary">REQUEST BETA ACCESS</a>
+    <a href="#" class="btn-ghost">WATCH TRAILER</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="footer-logo">BLADERUNNER 2077 STUDIOS</div>
+    <p class="footer-copy">© 2077 Bladerunner Studios. All neural rights reserved. Night City is a work of fiction.</p>
+  </div>
+  <div class="footer-links">
+    <a href="#">PRESS</a>
+    <a href="#">CAREERS</a>
+    <a href="#">COMMUNITY</a>
+    <a href="#">PRIVACY</a>
+  </div>
+</footer>
+
+<script>
+// ── LOADER ──
+const loader    = document.getElementById('loader');
+const loaderBar = document.getElementById('loader-bar');
+const loaderPct = document.getElementById('loader-pct');
+let loadPct = 0;
+const loadInterval = setInterval(() => {
+  loadPct += Math.random() * 18;
+  if (loadPct >= 100) { loadPct = 100; clearInterval(loadInterval); }
+  loaderBar.style.width = loadPct + '%';
+  loaderPct.textContent = Math.floor(loadPct) + '%';
+  if (loadPct === 100) setTimeout(() => loader.classList.add('hidden'), 400);
+}, 120);
+
+// ── NAV SCROLL ──
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 60);
+}, {passive:true});
+
+// ── MARQUEE ──
+const marqueeItems = [
+  'CHROME PROTOCOL', '★', 'NULL CITY', '★', 'NEON ABYSS II', '★',
+  'OPEN WORLD', '★', 'CYBERPUNK RPG', '★', 'COMING 2025', '★',
+  'BLADERUNNER STUDIOS', '★', 'VOID ENGINE 4', '★', 'NIGHT CITY', '★'
+];
+const track = document.getElementById('marquee-track');
+// Duplicate 4x for seamless loop
+for (let rep = 0; rep < 4; rep++) {
+  marqueeItems.forEach(item => {
+    const s = document.createElement('span');
+    s.textContent = item;
+    if (item === '★') s.classList.add('dot');
+    track.appendChild(s);
+  });
+}
+
+// ── CANVAS SCROLL ENGINE ──
+const canvas   = document.getElementById('cyber-canvas');
+const ctx      = canvas.getContext('2d', { alpha: false });
+const section  = document.getElementById('scroll-section');
+const progress = document.getElementById('scroll-progress');
+
+let dpr        = Math.min(window.devicePixelRatio || 1, 3);
+let ticking    = false;
+let resizeTimer;
+let videoReady = false;
+let seeking    = false;
+let pendingTime = null;
+
+// Panels
+const panels = [
+  { el: document.getElementById('panel-1'), from: 0.02, to: 0.22 },
+  { el: document.getElementById('panel-2'), from: 0.22, to: 0.42 },
+  { el: document.getElementById('panel-3'), from: 0.42, to: 0.62 },
+  { el: document.getElementById('panel-4'), from: 0.62, to: 0.82 },
+  { el: document.getElementById('panel-5'), from: 0.82, to: 1.00 },
+];
+
+// Hidden video element
+const vid = document.createElement('video');
+vid.src = 'cyberpunk.mp4';
+vid.preload = 'auto';
+vid.muted = true;
+vid.playsInline = true;
+vid.setAttribute('playsinline', '');
+vid.setAttribute('webkit-playsinline', '');
+vid.style.cssText = 'position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;top:-9999px;left:-9999px;';
+document.body.appendChild(vid);
+vid.load();
+
+vid.addEventListener('loadedmetadata', () => {
+  videoReady = true;
+  vid.currentTime = 0;
+});
+
+vid.addEventListener('seeked', () => {
+  drawCurrentFrame();
+  seeking = false;
+  if (pendingTime !== null) {
+    const t = pendingTime; pendingTime = null; seekTo(t);
+  }
+});
+
+vid.addEventListener('error', () => {
+  // Fallback gradient if video fails
+  videoReady = false;
+});
+
+function seekTo(t) {
+  if (!videoReady || !vid.duration) return;
+  const clamped = Math.max(0, Math.min(vid.duration, t));
+  if (seeking) { pendingTime = clamped; return; }
+  if (Math.abs(vid.currentTime - clamped) < 0.033) return;
+  seeking = true;
+  vid.currentTime = clamped;
+}
+
+function setCanvasSize() {
+  const w = window.innerWidth, h = window.innerHeight;
+  canvas.width  = Math.round(w * dpr);
+  canvas.height = Math.round(h * dpr);
+  canvas.style.width  = w + 'px';
+  canvas.style.height = h + 'px';
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+  drawCurrentFrame();
+}
+
+function drawCurrentFrame() {
+  const cw = window.innerWidth, ch = window.innerHeight;
+
+  // Black base
+  ctx.fillStyle = '#020408';
+  ctx.fillRect(0, 0, cw, ch);
+
+  if (!videoReady || !vid.videoWidth) {
+    // Fallback: animated neon gradient
+    const grad = ctx.createRadialGradient(cw/2, ch/2, 0, cw/2, ch/2, Math.max(cw,ch)*0.8);
+    grad.addColorStop(0, 'rgba(0,20,40,1)');
+    grad.addColorStop(0.5, 'rgba(2,4,8,1)');
+    grad.addColorStop(1, '#000');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, cw, ch);
+    return;
+  }
+
+  const vw = vid.videoWidth, vh = vid.videoHeight;
+  const scale = Math.max(cw / vw, ch / vh);   // object-fit:cover
+  const dw = vw * scale, dh = vh * scale;
+  const ox = (cw - dw) / 2, oy = (ch - dh) / 2;
+  ctx.drawImage(vid, ox, oy, dw, dh);
+
+  // Subtle cyan color grade overlay
+  ctx.fillStyle = 'rgba(0,20,30,0.18)';
+  ctx.fillRect(0, 0, cw, ch);
+}
+
+function update() {
+  const rect    = section.getBoundingClientRect();
+  const scrollH = section.offsetHeight - window.innerHeight;
+  const prog    = Math.max(0, Math.min(1, -rect.top / scrollH));
+
+  // Seek video
+  seekTo(prog * (vid.duration || 0));
+
+  // Progress bar
+  progress.style.width = (prog * 100) + '%';
+
+  // Text panels
+  panels.forEach(p => {
+    const visible = prog >= p.from && prog < p.to;
+    p.el.classList.toggle('visible', visible);
+  });
+
+  ticking = false;
+}
+
+window.addEventListener('scroll', () => {
+  if (!ticking) { ticking = true; requestAnimationFrame(update); }
+}, { passive: true });
+
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    dpr = Math.min(window.devicePixelRatio || 1, 3);
+    setCanvasSize();
+  }, 100);
+});
+
+setCanvasSize();
+update();
+
+// ── NEON CURSOR GLOW (desktop) ──
+if (window.matchMedia('(pointer:fine)').matches) {
+  const cursor = document.createElement('div');
+  cursor.style.cssText = `
+    position:fixed; z-index:9997; pointer-events:none;
+    width:300px; height:300px; border-radius:50%;
+    background:radial-gradient(circle, rgba(0,245,255,0.04) 0%, transparent 70%);
+    transform:translate(-50%,-50%);
+    transition:opacity 0.3s;
+  `;
+  document.body.appendChild(cursor);
+  document.addEventListener('mousemove', e => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top  = e.clientY + 'px';
+  }, {passive:true});
+}
+</script>
+</body>
+</html>
